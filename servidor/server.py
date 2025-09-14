@@ -1,25 +1,13 @@
+# importando as bibliotecas do http
+import os
 from http.server import SimpleHTTPRequestHandler, HTTPServer
 
-# # definindo a porta do servidor
-# port = 8000
-
-# # definindo o gerenciador/manipulador de requisições
-# handler = SimpleHTTPRequestHandler
-
-# # criando a instancia do servidor
-# server = HTTPServer(('localhost', port), handler)
-
-# # imprimindo mensagem de ok
-# print(f"Server running in http://localhost:{port}")
-# server.serve_forever()
-
-import os
-from http.server import SimpleHTTPRequestHandler
-
+# cria uma classe MyHandle que herda de SimpleHTTPRequestHandler
 class MyHandle(SimpleHTTPRequestHandler):
     def list_directory(self, path):
         try:
-            f = open(os.path.join(path, 'index.html'), 'r')
+            # acessa o arquivo index.html e manda uma resposta HTTP ao cliente
+            f = open(os.path.join(path, 'index.html'),'r')
             self.send_response(200)
             self.send_header("Content-type", "text/html")
             self.end_headers()
@@ -28,14 +16,19 @@ class MyHandle(SimpleHTTPRequestHandler):
             return None
         except FileNotFoundError:
             pass
+        # caso não haja o arquivo index.html retorna a lista de diretórios
         return super().list_directory(path)
     
+    # sobrescreve o método GET e verifica se o caminho requisitado é /login
     def do_GET(self):
         if self.path == "/login":
             try:
-                with open(os.path.join(os.getcwd(), 'login.html'), 'r') as login:
+                # tenta abrir o arquivo login.html no diretório atual do servidor
+                with open(os.path.join(os.getcwd(), 'login.html'), 'encoding=utf-8') as login:
                     content = login.read()
+                # manda uma resposta HTTP
                 self.send_response(200)
+                # cabeçalho da resposta com o tipo de contéudo (html)
                 self.send_header("Content-type: ", "text/html")
                 self.end_headers()
                 self.wfile.write(content.encode("utf-8"))
@@ -47,11 +40,12 @@ class MyHandle(SimpleHTTPRequestHandler):
     def do_GET(self):
         if self.path == "/cadastro":
             try:
-                with open(os.path.join(os.getcwd(), 'cadastro.html'), 'r') as cadastro:
+                with open(os.path.join(os.getcwd(), 'cadastro.html'), encoding='utf-8') as cadastro:
                     content = cadastro.read()
                 self.send_response(200)
                 self.send_header("Content-type ", "text/html")
                 self.end_headers()
+                # garante que não haja erros de acentuação
                 self.wfile.write(content.encode("utf-8"))
             except FileNotFoundError:
                 self.send_error(404, "File Not Found")
@@ -67,12 +61,14 @@ class MyHandle(SimpleHTTPRequestHandler):
                 self.send_header("Content-type ", "text/html")
                 self.end_headers()
                 self.wfile.write(content.encode('utf-8'))
+                # exception caso o caminho do arquivo não seja encontrado
             except FileNotFoundError:
                 self.send_error(404, "File Not Found")
         else:
             super().do_GET()
 
-
+# a main roda o servidor e chama a classe MyHandle
+# cria um caminho localhost e define a porta que irá rodar o servidor
 def main():
     server_address = ('',8001)
     httpd = HTTPServer(server_address, MyHandle)

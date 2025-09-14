@@ -4,6 +4,76 @@
 * {
     margin: 0;
     font-family: 'Montserrat', sans-serif;
-    font-size: 12px;
+    font-size: 20px;
     background: #ffffff;
+}
+
+.paginaFormulario {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    width: 100%;
+    height: 100vh;
+}
+
+.formulario {
+    display: flex;
+    flex-direction: column;
+    padding: 40px;
+    gap: 5px;
+}
+
+.formulario input {
+    width: 50vh;
+    padding: 15px;
+    border: 1px solid #ccc;
+    margin-bottom: 20px;
+    margin-top: 5px;
+    border-radius: 4px;
+    transition: all linear 160ms;
+    outline: none;
+}
+
+.formulario label {
+    font-weight: 600;
+}
+
+.btnForms {
+    background-color: darkblue;
+    color: #fff;
+    font-size: 20px;
+    font-weight: 600;
+    border: none;
+    transition: all linear 160ms;
+    cursor: pointer;
+    margin: 0;
+    width: 25vh;
+    height: 5vh;
+}
+
+.btnForms a {
+    background-color: darkblue;
+    color: white;
+    text-decoration: none;
+}
+
+p {
+    margin-top: 30px;
+    cursor: pointer;
+}
+
+p:hover {
+    color: darkblue;
+}
+
+h1 {
+    margin-bottom: 30px;
+    font-size: 40px;
+}
+
+.caixaTexto {
+    height: 80px;
+    padding: 10px;
+    text-align: left;
 }

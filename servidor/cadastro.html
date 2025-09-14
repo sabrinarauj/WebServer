@@ -4,11 +4,14 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="stylesheet" href="styles.css" />
-    <title>Back-end</title>
+    <title>Cadastro</title>
 </head>
 <body>
+    <div class="paginaFormulario">
     <h1>Cadastro</h1>
-    <section>
+    <form class="formulario">
+
+        <!--campos de cadastro do filme-->
         <label>Nome do filme</label>
         <input type="text" placeholder="Digite o nome do filme" />
         <label>Atores</label>
@@ -22,7 +25,9 @@
         <label>Produtora</label>
         <input type="text" placeholder="Digite a produtora do filme" />
         <label>Sinopse</label>
-        <input type="text" placeholder="Escreva a sinopse do filme" />
-    </section>
+        <input type="textarea" class="caixaTexto" placeholder="Escreva a sinopse do filme" />
+        </form>
+        <button class="btnForms"><a href="filmes.html">Enviar</button></a>
+        </div>
 </body>
 </html>
