@@ -9,23 +9,23 @@
 <body>
     <div class="paginaFormulario">
     <h1>Cadastro</h1>
-    <form class="formulario">
+    <form action='/send_cadastro' method='post' class="formulario">
 
         <!--campos de cadastro do filme-->
         <label>Nome do filme</label>
-        <input type="text" placeholder="Digite o nome do filme" />
+        <input type="text" placeholder="Digite o nome do filme" name="nome_filme"/>
         <label>Atores</label>
-        <input type="text" placeholder="Digite os nomes dos atores" />
+        <input type="text" placeholder="Digite os nomes dos atores" name="nome_atores"/>
         <label>Diretor</label>
-        <input type="text" placeholder="Digite o nome do(a) diretor(a)" />
+        <input type="text" placeholder="Digite o nome do(a) diretor(a)" name="nome_diretor"/>
         <label>Ano</label>
-        <input type="date" placeholder="Data do filme" />
+        <input type="date" placeholder="Data do filme" name="ano_filme"/>
         <label>Gênero</label>
-        <input type="text" placeholder="Digite o gênero do filme" />
+        <input type="text" placeholder="Digite o gênero do filme" name="genero_filme"/>
         <label>Produtora</label>
-        <input type="text" placeholder="Digite a produtora do filme" />
+        <input type="text" placeholder="Digite a produtora do filme" name="nome_produtora"/>
         <label>Sinopse</label>
-        <input type="textarea" class="caixaTexto" placeholder="Escreva a sinopse do filme" />
+        <input type="textarea" class="caixaTexto" placeholder="Escreva a sinopse do filme" name="sinopse"/>
         </form>
         <button class="btnForms"><a href="filmes.html">Enviar</button></a>
         </div>

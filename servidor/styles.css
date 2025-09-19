@@ -8,7 +8,7 @@
     background: #ffffff;
 }
 
-.paginaFormulario {
+#paginaLogin {
     display: flex;
     flex-direction: column;
     align-items: center;
@@ -17,14 +17,14 @@
     height: 100vh;
 }
 
-.formulario {
+#formularioLogin {
     display: flex;
     flex-direction: column;
     padding: 40px;
     gap: 5px;
 }
 
-.formulario input {
+#formularioLogin input {
     width: 50vh;
     padding: 15px;
     border: 1px solid #ccc;
@@ -35,7 +35,7 @@
     outline: none;
 }
 
-.formulario label {
+#formularioLogin label {
     font-weight: 600;
 }
 
