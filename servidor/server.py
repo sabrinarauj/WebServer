@@ -144,18 +144,54 @@ class MyHandle(SimpleHTTPRequestHandler):
         else:
             super(MyHandle, self).do_POST()
 
-    # def do_DELETE(self):
-    #     content_length = int(self.headers['Content-length'])
-    #     body = self.rfile.read(content_length).decode('utf-8')
-    #     form_data = parse_qs(body)
+    def do_DELETE(self):
+        content_length = int(self.headers['Content-length'])
+        body = self.rfile.read(content_length).decode('utf-8')
+        form_data = parse_qs(body)
 
-    #     if self.path == "/deletar_filmes":
-    #         try:
-            
-    #         self.send_response(200)
-    #         self.send_header("Content-type", "text/html")
-    #         self.end_headers()
-    #         self.wfile.write("Cadastro de filme recebido com sucesso!".encode("utf-8"))
+        if self.path == "/deletar_filmes":
+            titulo_filme = form_data.get('nome_filme')
+            if titulo_filme:
+                titulo_filme = titulo_filme[0]
+            try:
+                self.send_response(200)
+                mensagem = f"Filme deletado com sucesso"
+            except:
+                self.send_response(404)
+                mensagem = f"Filme não encontrado"
+                
+        self.send_header("Content-type", "text/html")
+        self.end_headers()
+        self.wfile.write(mensagem.encode("utf-8"))
+
+    def do_PUT(self):
+        content_length = int(self.headers['Content-length'])
+        body = self.rfile.read(content_length).decode('utf-8')
+        form_data = parse_qs(body)
+
+        if self.path == '/editar_filme':
+            titulo_filme = form_data.get('nome_filme')
+        
+        novo_nome = form_data.get('nome_filme', [""])[0]
+        novo_atores = form_data.get('nome_atores', [""])[0]
+        novo_diretor = form_data.get('nome_diretor', [""])[0]
+        nova_data = form_data.get('ano', [""])[0]
+        novo_genero = form_data.get('genero_filme', [""])[0]
+        nova_produtora = form_data.get('nome_produtora', [""])[0]
+        nova_sinopse = form_data.get('sinopse', [""])[0] 
+        nova_capa = form_data.get('capa_filme', [""])[0]
+
+        filme_editado = {
+            'nome_filme': novo_nome,
+            'nome_atores': novo_atores,
+            'nome_diretor': novo_diretor,
+            'ano': nova_data,
+            'genero_filme': novo_genero,
+            'nome_produtora': nova_produtora,
+            'sinopse': nova_sinopse,
+            'capa_filme': nova_capa
+        }
+        
 # a main roda o servidor
 def main():
     server_address = ('', 8000)
