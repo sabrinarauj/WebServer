@@ -10,8 +10,21 @@
 <body>
     <h1>Página de listar filmes</h1>
     <ul id="filmes"></ul>
-    <br>
-    <button type="submit" onclick="deletar_filmes">Apagar filme</button>
-    <button type="submit" onclick="editar_filme">Editar</button>
+
+    <h2>Deletar Filme</h2>
+    <input type="text" id="deletarFilme" placeholder="Nome do filme">
+    <button onclick="deletar_filme()">Apagar Filme</button>
+
+    <h2>Editar Filme</h2>
+    <input type="text" id="tituloFilme" placeholder="Nome do filme a editar"><br>
+    <input type="text" id="novoNome" placeholder="Novo nome"><br>
+    <input type="text" id="novoAtores" placeholder="Novo(s) ator(es)"><br>
+    <input type="text" id="novoDiretor" placeholder="Novo diretor"><br>
+    <input type="text" id="novoAno" placeholder="Ano"><br>
+    <input type="text" id="novoGenero" placeholder="Gênero"><br>
+    <input type="text" id="novoProdutora" placeholder="Produtora"><br>
+    <input type="text" id="novaSinopse" placeholder="Sinopse"><br>
+    <input type="text" id="novaCapa" placeholder="URL da capa"><br>
+    <button onclick="editar_filme()">Salvar</button>
 </body>
 </html>

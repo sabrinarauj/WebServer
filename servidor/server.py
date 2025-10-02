@@ -144,25 +144,45 @@ class MyHandle(SimpleHTTPRequestHandler):
         else:
             super(MyHandle, self).do_POST()
 
-    def do_DELETE(self):
-        content_length = int(self.headers['Content-length'])
-        body = self.rfile.read(content_length).decode('utf-8')
-        form_data = parse_qs(body)
+        def do_DELETE(self):
+            content_length = int(self.headers['Content-length'])
+            body = self.rfile.read(content_length).decode('utf-8')
+            form_data = parse_qs(body)
 
-        if self.path == "/deletar_filmes":
-            titulo_filme = form_data.get('nome_filme')
-            if titulo_filme:
-                titulo_filme = titulo_filme[0]
-            try:
-                self.send_response(200)
-                mensagem = f"Filme deletado com sucesso"
-            except:
-                self.send_response(404)
-                mensagem = f"Filme não encontrado"
-                
-        self.send_header("Content-type", "text/html")
-        self.end_headers()
-        self.wfile.write(mensagem.encode("utf-8"))
+            if self.path == "/deletar_filmes":
+                titulo_filme = form_data.get('nome_filme', [""])[0]
+                arquivo = "dados.json"
+
+            if os.path.exists(arquivo):
+                with open(arquivo, encoding="utf-8") as f:
+                    try:
+                        filmes = json.load(f)
+                    except json.JSONDecodeError:
+                        filmes = []
+            else:
+                filmes = []
+
+            # Procura e remove
+            filme_removido = False
+            for filme in filmes:
+                if filme.get("nome") == titulo_filme:
+                    filmes.remove(filme)
+                    filme_removido = True
+                    break
+
+                if filme_removido:
+                    with open(arquivo, "w", encoding="utf-8") as f:
+                        json.dump(filmes, f, indent=4, ensure_ascii=False)
+                    self.send_response(200)
+                    mensagem = f"Filme '{titulo_filme}' deletado com sucesso."
+                else:
+                    self.send_response(404)
+                    mensagem = f"Filme '{titulo_filme}' não encontrado."
+
+            self.send_header("Content-type", "text/html")
+            self.end_headers()
+            self.wfile.write(mensagem.encode("utf-8"))
+
 
     def do_PUT(self):
         content_length = int(self.headers['Content-length'])
@@ -170,27 +190,50 @@ class MyHandle(SimpleHTTPRequestHandler):
         form_data = parse_qs(body)
 
         if self.path == '/editar_filme':
-            titulo_filme = form_data.get('nome_filme')
-        
-        novo_nome = form_data.get('nome_filme', [""])[0]
-        novo_atores = form_data.get('nome_atores', [""])[0]
-        novo_diretor = form_data.get('nome_diretor', [""])[0]
-        nova_data = form_data.get('ano', [""])[0]
-        novo_genero = form_data.get('genero_filme', [""])[0]
-        nova_produtora = form_data.get('nome_produtora', [""])[0]
-        nova_sinopse = form_data.get('sinopse', [""])[0] 
-        nova_capa = form_data.get('capa_filme', [""])[0]
+            titulo_filme = form_data.get('nome_filme', [""])[0]
 
-        filme_editado = {
-            'nome_filme': novo_nome,
-            'nome_atores': novo_atores,
-            'nome_diretor': novo_diretor,
-            'ano': nova_data,
-            'genero_filme': novo_genero,
-            'nome_produtora': nova_produtora,
-            'sinopse': nova_sinopse,
-            'capa_filme': nova_capa
-        }
+            arquivo = "dados.json"
+
+            if os.path.exists(arquivo):
+                with open(arquivo, encoding="utf-8") as f:
+                    try:
+                        filmes = json.load(f)
+                    except json.JSONDecodeError:
+                        filmes = []
+            else:
+                filmes = []
+
+            filme_editado = {
+                "nome": form_data.get('nome_filme', [""])[0],
+                "atores": form_data.get('nome_atores', [""])[0],
+                "diretor": form_data.get('nome_diretor', [""])[0],
+                "data": form_data.get('ano', ["0"])[0],
+                "gênero": form_data.get('genero_filme', [""])[0],
+                "produtora": form_data.get('nome_produtora', [""])[0],
+                "sinopse": form_data.get('sinopse', [""])[0],
+                "capa": form_data.get('capa_filme', [""])[0]
+            }
+
+            editado = False
+            for i, filme in enumerate(filmes):
+                if filme.get("nome") == titulo_filme:
+                    filmes[i] = filme_editado
+                    editado = True
+                    break
+
+            if editado:
+                with open(arquivo, "w", encoding="utf-8") as f:
+                    json.dump(filmes, f, indent=4, ensure_ascii=False)
+                self.send_response(200)
+                mensagem = f"Filme '{titulo_filme}' atualizado com sucesso."
+            else:
+                self.send_response(404)
+                mensagem = f"Filme '{titulo_filme}' não encontrado."
+
+            self.send_header("Content-type", "text/html")
+            self.end_headers()
+            self.wfile.write(mensagem.encode("utf-8"))
+
         
 # a main roda o servidor
 def main():
