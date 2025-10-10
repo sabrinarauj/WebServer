@@ -4,6 +4,12 @@ from http.server import SimpleHTTPRequestHandler, HTTPServer
 from urllib.parse import parse_qs
 import json
 import requests
+import mysql.connector # pip install 
+
+mydb = mysql.connector.connect(
+    host = "localhost",
+    user = "root"
+)
 
 # cria uma classe MyHandle que herda de SimpleHTTPRequestHandler
 class MyHandle(SimpleHTTPRequestHandler):
@@ -21,6 +27,22 @@ class MyHandle(SimpleHTTPRequestHandler):
             pass
         return super().list_directory(path)
     
+    def loadFilmes(self):
+        cursor = mydb.cursor()
+        cursor.execute("SELECT * FROM db_filmes.filme")
+        result = cursor.fetchall()
+
+        print("---------------\n", result)
+
+        for res in result:
+            id = res[0]
+            titulo = res[1]
+            orcamento = res[2]
+            tempo_duracao = res[3]
+            ano = res[4]
+            print(id, titulo, orcamento, tempo_duracao, ano)
+    
+
     def accont_user(self, login, password):
         loga = "sabrina@gmail.com"
         senha = "123456"
@@ -32,6 +54,7 @@ class MyHandle(SimpleHTTPRequestHandler):
     # sobrescreve o método GET
     def do_GET(self):
         if self.path == "/login":
+            self.loadFilmes()
             try:
                 with open(os.path.join(os.getcwd(), 'login.html'), encoding='utf-8') as login:
                     content = login.read()
@@ -65,24 +88,26 @@ class MyHandle(SimpleHTTPRequestHandler):
                 self.send_error(404, "File Not Found")
 
         elif self.path == "/get_lista":
-            arquivo = "dados.json"
+            conexao = mysql.connector.connect (
+                host = "localhost",
+                user = "root"
+            )
 
-            if os.path.exists(arquivo):
-               with open(arquivo, encoding="utf-8") as listagem:
-                try:
-                    filmes = json.load(listagem)
-                except json.JSONDecodeError:
-                       filmes = []
-            else:
-                filmes = []
-            self.send_response(200)
-            self.send_header("Content-type", "application/json")
-            self.end_headers()
-            self.wfile.write(json.dumps(filmes).encode("utf-8"))
+            cursor = conexao.cursor()
+            consulta = "SELECT * FROM db_filmes.filme"
+            cursor.execute(consulta)
+
+            resultado = cursor.fetchall()
+            print("OLHA ELE AE",resultado)
+
+            for r in resultado:
+                id = r[0]
+                titulo = r[1]
+
+                print(id, titulo)
+         
         else:
             super().do_GET()
-
-        
 
     # sobrescreve o método POST
     def do_POST(self):

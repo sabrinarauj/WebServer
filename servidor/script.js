@@ -17,7 +17,7 @@ function carregarFilmes() {
                         <strong>Sinopse:</strong> ${lista.sinopse} <br>
                         <hr>
                     </li>
-                `;
+                     `;
             });
         });
 }
@@ -30,11 +30,11 @@ function deletar_filme() {
         headers: { "Content-Type": "text/html" },
         body: `nome_filme=${encodeURIComponent(nome)}`
     })
-    .then(res => res.text())
-    .then(msg => {
-        alert(msg);
-        carregarFilmes();
-    });
+        .then(res => res.text())
+        .then(msg => {
+            alert(msg);
+            carregarFilmes();
+        });
 }
 
 function editar_filme() {
@@ -55,11 +55,11 @@ function editar_filme() {
         headers: { "Content-Type": "text/html" },
         body: dados
     })
-    .then(res => res.text())
-    .then(msg => {
-        alert(msg);
-        carregarFilmes(); 
-    });
+        .then(res => res.text())
+        .then(msg => {
+            alert(msg);
+            carregarFilmes();
+        });
 }
 
 carregarFilmes();
