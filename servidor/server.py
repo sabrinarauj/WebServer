@@ -93,18 +93,18 @@ class MyHandle(SimpleHTTPRequestHandler):
                 user = "root"
             )
 
-            cursor = conexao.cursor()
-            consulta = "SELECT * FROM db_filmes.filme"
+            cursor = conexao.cursor
+            consulta = "SELECT * FROM filme"
             cursor.execute(consulta)
-
             resultado = cursor.fetchall()
-            print("OLHA ELE AE",resultado)
 
-            for r in resultado:
-                id = r[0]
-                titulo = r[1]
+            self.send_response(200)
+            self.send_header("Content-type", "application/json")
+            self.end_headers()
+            self.wfile.write(json.dumps(resultado, ensure_ascii=False, indent=4).encode("utf-8")) # formatando o json
 
-                print(id, titulo)
+            cursor.close()
+            conexao.close() # fechando a conexão
          
         else:
             super().do_GET()
