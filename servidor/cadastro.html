@@ -1,35 +1,44 @@
 <!DOCTYPE html>
 <html lang="pt-br">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="stylesheet" href="styles.css" />
     <title>Cadastro</title>
 </head>
+
 <body>
     <div class="paginaFormulario">
-    <h1>Cadastro</h1>
-    <form action='/send_cadastro' method='post' class="formulario">
+        <h1>Cadastro</h1>
+        <form action='/send_cadastro' method='post' class="formulario">
 
-        <!--campos de cadastro do filme-->
-        <label>Nome do filme</label>
-        <input type="text" placeholder="Digite o nome do filme" name="nome_filme"/>
-        <label>Atores</label>
-        <input type="text" placeholder="Digite os nomes dos atores" name="nome_atores"/>
-        <label>Diretor</label>
-        <input type="text" placeholder="Digite o nome do(a) diretor(a)" name="nome_diretor"/>
-        <label>Ano</label>
-        <input type="date" placeholder="Data do filme" name="ano"/>
-        <label>Gênero</label>
-        <input type="text" placeholder="Digite o gênero do filme" name="genero_filme"/>
-        <label>Produtora</label>
-        <input type="text" placeholder="Digite a produtora do filme" name="nome_produtora"/>
-        <label>Sinopse</label>
-        <textarea class="caixaTexto" placeholder="Escreva a sinopse do filme" name="sinopse"></textarea>
-        <label>Capa</label>
-        <input type="text" placeholder="Cole o link da capa" name="capa_filme"/>
-        <button type="submit" class="btnForms">Enviar</button>    
-    </form>
-        </div>
+            <!--campos de cadastro do filme-->
+            <label>Nome do filme</label>
+            <input type="text" placeholder="Digite o nome do filme" name="nome_filme" />
+            <label>Ano</label>
+            <input type="number" placeholder="Data do filme" name="ano" />
+            <label>Produtora</label>
+            <input type="text" placeholder="Digite a produtora do filme" name="nome_produtora" />
+            <label>Orçamento</label>
+            <input type="text" placeholder="Digite o orçamento do filme" name="orcamento" />
+            <label>Duração</label>
+            <input type="text" placeholder="Digite a duração do filme" name="duracao" />
+            <label>Capa</label>
+            <input type="text" placeholder="Cole o link da capa" name="capa_filme" />
+            <button type="submit" class="btnForms">Enviar</button>
+        </form>
+        <!-- <label>Atores</label>
+        <input type="text" placeholder="Digite os nomes dos atores" name="nome_atores"/> -->
+        <!-- <label>Diretor</label>
+        <input type="text" placeholder="Digite o nome do(a) diretor(a)" name="nome_diretor"/> -->
+        <!-- <label>Gênero</label>
+        <input type="text" placeholder="Digite o gênero do filme" name="genero_filme"/> -->
+
+        <!-- <label>Sinopse</label>
+        <textarea class="caixaTexto" placeholder="Escreva a sinopse do filme" name="sinopse"></textarea> --> -->
+
+    </div>
 </body>
+
 </html>

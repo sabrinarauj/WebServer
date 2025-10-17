@@ -4,7 +4,7 @@ from http.server import SimpleHTTPRequestHandler, HTTPServer
 from urllib.parse import parse_qs
 import json
 import requests
-import mysql.connector # pip install 
+import mysql.connector # pip install mysql-connector-python
 
 mydb = mysql.connector.connect(
     host = "localhost",
@@ -41,7 +41,23 @@ class MyHandle(SimpleHTTPRequestHandler):
             tempo_duracao = res[3]
             ano = res[4]
             print(id, titulo, orcamento, tempo_duracao, ano)
+
+        cursor.close()
+
+    def insertFilminhos(self, nome, produtora, orcamento, duracao, ano, poster):
+        cursor = mydb.cursor()
+        cursor.execute("INSERT INTO db_filmes.filme (titulo, orcamento, tempo_duracao, ano, poster) VALUES (%s, %s, %s, %s, %s, %s)", (nome, produtora, orcamento, duracao, ano, poster))
     
+        cursor.execute("SELECT id FROM db_filmes.filme WHERE titulo = %s", (nome, ))
+
+        resultado = cursor.fetchall()
+        cursor.execute("SELECT * FROM db_filmes.filme WHERE id = %s", (resultado[0][0],))
+        
+        resultado = cursor.fetchall()
+        cursor.close()
+        mydb.commit()
+
+        return resultado
 
     def accont_user(self, login, password):
         loga = "sabrina@gmail.com"
@@ -54,7 +70,7 @@ class MyHandle(SimpleHTTPRequestHandler):
     # sobrescreve o método GET
     def do_GET(self):
         if self.path == "/login":
-            self.loadFilmes()
+            # self.loadFilmes() -> chama a função para exibir os filmes
             try:
                 with open(os.path.join(os.getcwd(), 'login.html'), encoding='utf-8') as login:
                     content = login.read()
@@ -94,8 +110,8 @@ class MyHandle(SimpleHTTPRequestHandler):
             )
 
             cursor = conexao.cursor
-            consulta = "SELECT * FROM filme"
-            cursor.execute(consulta)
+            # consulta = "SELECT * FROM filme"
+            cursor.execute("SELECT * FROM filme")
             resultado = cursor.fetchall()
 
             self.send_response(200)
@@ -126,40 +142,19 @@ class MyHandle(SimpleHTTPRequestHandler):
             self.wfile.write(logou.encode("utf-8"))
 
         elif self.path == '/send_cadastro':
+            content_length = int(self.headers['Content-length'])
+            body = self.rfile.read(content_length).decode('utf-8')
+            form_data = parse_qs(body)
 
-            jsun = {
-                "nome": form_data.get('nome_filme', [""])[0],
-                "atores": form_data.get('nome_atores', [""])[0],
-                "diretor": form_data.get('nome_diretor', [""])[0],
-                "data": form_data.get('ano', ["0"])[0],
-                "gênero": form_data.get('genero_filme', [""])[0],
-                "produtora": form_data.get('nome_produtora', [""])[0],
-                "sinopse": form_data.get('sinopse', [""])[0],
-                "capa": form_data.get('capa_filme', [""])[0]
-            }
+            nome =  form_data.get('nome_filme', [""])[0]
+            produtora =  form_data.get('nome_produtora', [""])[0]
+            orcamento =  form_data.get('orcamento', [""])[0]
+            duracao =  form_data.get('duracao', [""])[0]
+            ano =  form_data.get('ano', [""])[0]
+            capa =  form_data.get('capa_filme', [""])[0]
 
-            arquivo = "dados.json"
-
-            if os.path.exists(arquivo):
-                with open(arquivo, encoding="utf-8") as lista:
-                    try:
-                        filmes = json.load(lista)
-                    except json.JSONDecodeError:
-                        filmes = []
-                filmes.append(jsun)
-            else:
-                filmes = [jsun]
-            with open(arquivo, "w", encoding="utf-8") as lista:
-                json.dumps(filmes, lista, indent=4, ensure_ascii=False)
-
-            # código anterior:
-            # print("Nome do filme: ", form_data.get('nome_filme', [""])[0])
-            # print("Nome dos atores: ", form_data.get('nome_atores', [""])[0])
-            # print("Nome do diretor: ", form_data.get('nome_diretor', [""])[0])
-            # print("Data: ", form_data.get('ano', [""])[0])
-            # print("Gênero: ", form_data.get('genero_filme', [""])[0])
-            # print("Produtora: ", form_data.get('nome_produtora', [""])[0])
-            # print("Sinopse: ", form_data.get('sinopse', [""])[0])
+            resp = self.insertFilminhos(nome, produtora, orcamento, duracao, ano, capa)
+            print(resp)
 
             self.send_response(200)
             self.send_header("Content-type", "text/html")
