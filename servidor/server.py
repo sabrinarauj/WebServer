@@ -3,8 +3,13 @@ import os
 from http.server import SimpleHTTPRequestHandler, HTTPServer
 from urllib.parse import parse_qs
 import json
-import requests
 import mysql.connector # pip install mysql-connector-python
+
+# definindo a pasta de onde encontrar os arquivos html
+# with open(os.path.join(os.getcwd(), 'templates', 'login.html'), encoding='utf-8') as login: caso precise adicionar 
+
+BASE_DIR = os.path.join(os.getcwd(), 'pages')
+
 
 mydb = mysql.connector.connect(
     host = "localhost",
@@ -46,18 +51,46 @@ class MyHandle(SimpleHTTPRequestHandler):
 
     def insertFilminhos(self, nome, produtora, orcamento, duracao, ano, poster):
         cursor = mydb.cursor()
-        cursor.execute("INSERT INTO db_filmes.filme (titulo, orcamento, tempo_duracao, ano, poster) VALUES (%s, %s, %s, %s, %s, %s)", (nome, produtora, orcamento, duracao, ano, poster))
-    
-        cursor.execute("SELECT id FROM db_filmes.filme WHERE titulo = %s", (nome, ))
 
-        resultado = cursor.fetchall()
-        cursor.execute("SELECT * FROM db_filmes.filme WHERE id = %s", (resultado[0][0],))
+        cursor.execute("SELECT COUNT(*) FROM db_filmes.filme WHERE titulo = %s", (nome,))
+        existe = cursor.fetchone()[0]
+
+        if existe > 0:
+            cursor.close()
+            return {
+                    "status": "Erro ao cadastrar filme",
+                    "mensagem": f"Filme {nome} já está cadastrado"
+                    }
         
-        resultado = cursor.fetchall()
+        try:
+            orcamento = float(orcamento)
+            ano = int(ano)
+        except ValueError:
+            cursor.close()
+            return {
+                "status": "Erro",
+                "mensagem": "Formato do campo inválido"
+            }
+        
+        if not nome or not produtora or not duracao or not poster:
+            cursor.close()
+            return {
+                "status": "Erro",
+                "mensagem": "Todos os campos devem estar preenchidos"
+            }
+
+        cursor.execute(
+            """INSERT INTO db_filmes.filme (titulo, orcamento, tempo_duracao, ano, poster)
+               VALUES (%s, %s, %s, %s, %s)
+    """, (nome, orcamento, duracao, ano, poster))
+       
         cursor.close()
         mydb.commit()
 
-        return resultado
+        return {
+            "status": "Sucesso total",
+            "mensagem": f"O filme '{nome}' foi cadastrado com sucesso!"
+        } 
 
     def accont_user(self, login, password):
         loga = "sabrina@gmail.com"
@@ -143,7 +176,7 @@ class MyHandle(SimpleHTTPRequestHandler):
 
         elif self.path == '/send_cadastro':
             content_length = int(self.headers['Content-length'])
-            body = self.rfile.read(content_length).decode('utf-8')
+            body = self.rfile.read(content_length).decode('utf-8') 
             form_data = parse_qs(body)
 
             nome =  form_data.get('nome_filme', [""])[0]
@@ -154,15 +187,23 @@ class MyHandle(SimpleHTTPRequestHandler):
             capa =  form_data.get('capa_filme', [""])[0]
 
             resp = self.insertFilminhos(nome, produtora, orcamento, duracao, ano, capa)
-            print(resp)
 
-            self.send_response(200)
-            self.send_header("Content-type", "text/html")
-            self.end_headers()
-            self.wfile.write("Cadastro de filme recebido com sucesso!".encode("utf-8"))
-
-        else:
-            super(MyHandle, self).do_POST()
+            if resp["status"] == "sucesso":
+                try:
+                    with open(os.path.join(os.getcwd(), 'sucesso.html'), encoding='utf-8') as sucesso:
+                        content = sucesso.read()
+                    self.send_response(200)
+                    self.send_header("Content-type", "text/html")
+                    self.end_headers()
+                    self.wfile.write(content.encode("utf-8"))
+                except FileNotFoundError:
+                    self.send_error(404, "Arquivo sucesso.html não encontrado.")
+            else:
+             # Mostra mensagem de erro direto na página
+                self.send_response(400)
+                self.send_header("Content-type", "text/html")
+                self.end_headers()
+                self.wfile.write(f"<h1>Erro: {resp['mensagem']}</h1>".encode("utf-8"))
 
         def do_DELETE(self):
             content_length = int(self.headers['Content-length'])
