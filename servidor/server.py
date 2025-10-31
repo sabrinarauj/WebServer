@@ -1,7 +1,7 @@
 # importando as bibliotecas do http
 import os
 from http.server import SimpleHTTPRequestHandler, HTTPServer
-from urllib.parse import parse_qs
+from urllib.parse import parse_qs, urlparse
 import json
 import mysql.connector # pip install mysql-connector-python
 
@@ -35,19 +35,25 @@ class MyHandle(SimpleHTTPRequestHandler):
     def loadFilmes(self):
         cursor = mydb.cursor()
         cursor.execute("SELECT * FROM db_filmes.filme")
-        result = cursor.fetchall()
 
-        print("---------------\n", result)
-
-        for res in result:
-            id = res[0]
-            titulo = res[1]
-            orcamento = res[2]
-            tempo_duracao = res[3]
-            ano = res[4]
-            print(id, titulo, orcamento, tempo_duracao, ano)
-
+        resultado = cursor.fetchall()
         cursor.close()
+
+        filmes = [
+            {
+                "id": result[0],
+                "titulo": result[1],
+                "categoria": result[2],
+                "orcamento": result[3],
+                "duracao": result[4],
+                "ano": result[5],
+                "capa": result[6],
+            }
+
+            for result in resultado
+        ]
+
+        return filmes
 
     def insertFilminhos(self, nome, produtora, orcamento, duracao, ano, poster):
         cursor = mydb.cursor()
@@ -103,7 +109,7 @@ class MyHandle(SimpleHTTPRequestHandler):
     # sobrescreve o método GET
     def do_GET(self):
         if self.path == "/login":
-            # self.loadFilmes() -> chama a função para exibir os filmes
+            
             try:
                 with open(os.path.join(os.getcwd(), 'login.html'), encoding='utf-8') as login:
                     content = login.read()
@@ -126,6 +132,7 @@ class MyHandle(SimpleHTTPRequestHandler):
                 self.send_error(404, "File Not Found")
 
         elif self.path == "/filmes":
+            self.loadFilmes()
             try:
                 with open(os.path.join(os.getcwd(), 'filmes.html'), encoding='utf-8') as filmes:
                     content = filmes.read()
@@ -135,6 +142,10 @@ class MyHandle(SimpleHTTPRequestHandler):
                 self.wfile.write(content.encode('utf-8'))
             except FileNotFoundError:
                 self.send_error(404, "File Not Found")
+
+        elif self.path.startswith("/umfilme"):
+            parametros = parse_qs(urlparse(self.path))
+            id = int(parametros.get)
 
         elif self.path == "/get_lista":
             conexao = mysql.connector.connect (
